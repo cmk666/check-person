@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Check Person</title>
+<style type="text/css">
+* { text-align: center; }
+hr { width: 50%; margin-top: 10px; margin-bottom: 10px; }
+footer { font-size: small; }
+</style>
+</head>
+<body onload="init();">
+<div>
+<select id="type1" onchange="upd1();">
+<option selected>--请选择--</option>
+</select>
+<select id="type2" onchange="upd2();">
+<option selected>--请选择--</option>
+</select>
+<button disabled id="add" onclick="add();">加入</button>
+<button onclick="query();">查询</button>
+</div>
+<hr />
+<hr id="line" />
+<div id="result">暂无结果</div>
+<hr />
+<footer>Made By CMK</footer>
+<script type="text/javascript">
+const data = {DATA};
+const type1 = document.getElementById("type1");
+const type2 = document.getElementById("type2");
+const addb = document.getElementById("add");
+const line = document.getElementById("line");
+const result = document.getElementById("result");
+const init = () => {
+	for ( var i in data ) {
+		var ele = document.createElement("option");
+		ele.innerHTML = i;
+		type1.appendChild(ele);
+	}
+};
+const upd1 = () => {
+	addb.disabled = true;
+	for ( var i = type2.children.length ; --i ; ) {
+		type2.removeChild(type2.children[i]);
+	}
+	if ( type1.value !== "--请选择--" ) {
+		for ( var i of data[type1.value] ) {
+			var ele = document.createElement("option");
+			ele.innerText = i;
+			type2.appendChild(ele);
+		}
+	}
+};
+const upd2 = () => {
+	addb.disabled = type2.innerText === "--请选择--";
+};
+const add = () => {
+	const ele = document.createElement("div");
+	ele.classList = ["item"];
+	ele.setAttribute("data", type1.selectedIndex * 10 + type2.selectedIndex - 11);
+	ele.innerHTML = type1.value + " " + type2.value + ' <button onclick="del(this);">删除</button>';
+	document.body.insertBefore(ele, line);
+};
+const del = ele => {
+	document.body.removeChild(ele.parentNode);
+};
+const query = () => {
+	var xhr = new XMLHttpRequest(), args = "";
+	for ( var i of document.querySelectorAll(".item") ) {
+		args += ( args === "" ? "?t=" : "," ) + i.getAttribute("data");
+	}
+	xhr.open("GET", "/get" + args, false);
+	xhr.send(null);
+	if ( xhr.status === 200 ) {
+		var data = JSON.parse(xhr.responseText);
+		if ( data.status !== "ok" ) {
+			result.innerHTML = '<span color="red">错误:参数不正确</span>';
+		} else {
+			result.innerHTML = "结果数量：" + data.count;
+			if ( data.result !== undefined ) {
+				var nw = "", cnt = 0;
+				for ( var i of data.result ) {
+					if ( cnt ) nw += ",";
+					nw += i;
+					if ( ++cnt == 10 ) {
+						result.innerHTML += "<br />" + nw;
+						nw = "";
+						cnt = 0;
+					}
+				}
+				if ( cnt ) {
+					result.innerHTML += "<br />" + nw;
+				}
+			} else {
+				result.innerHTML += "<br />由于数量太多,具体结果已省略";
+			}
+		}
+	} else {
+		result.innerHTML = '<span color="red">错误:请求发送失败</span>';
+	}
+};
+</script>
+</body>
+</html>
