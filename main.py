@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # @Author:             cmk666
 # @Created time:       2023-03-13 09:55:16
-# @Last Modified time: 2023-03-13 13:24:21
+# @Last Modified time: 2023-03-14 13:26:40
 from flask import Flask, request, jsonify
 import copy
 app = Flask('Check person')
@@ -36,7 +36,7 @@ def getdata():
 		val = request.args.get('t', None)
 		if val:
 			for i in map(int, val.split(',')):
-				x, y = i // 10, i % 10
+				x, y = i // 100, i % 100
 				res &= d[a[x][0]][a[x][1][y]]
 		data = { 'status': 'ok', 'count': len(res) }
 		if len(res) <= 100:

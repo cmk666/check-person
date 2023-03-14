@@ -58,7 +58,7 @@ const upd2 = () => {
 const add = () => {
 	const ele = document.createElement("div");
 	ele.classList = ["item"];
-	ele.setAttribute("data", type1.selectedIndex * 10 + type2.selectedIndex - 11);
+	ele.setAttribute("data", type1.selectedIndex * 100 + type2.selectedIndex - 101);
 	ele.innerHTML = type1.value + " " + type2.value + ' <button onclick="del(this);">删除</button>';
 	document.body.insertBefore(ele, line);
 };
